@@ -5,6 +5,11 @@ const { AppError } = require('./errorHandler');
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MIME_EXTENSIONS = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+};
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -13,7 +18,10 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename(req, file, cb) {
-    const ext = path.extname(file.originalname);
+    // Derive the extension from the validated mimetype, not the user-controlled
+    // originalname, so a spoofed filename (e.g. "payload.html") can't result in
+    // a file being written and served with an attacker-chosen extension.
+    const ext = MIME_EXTENSIONS[file.mimetype] || '';
     cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
   },
 });
