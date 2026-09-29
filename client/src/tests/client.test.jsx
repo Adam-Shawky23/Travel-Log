@@ -24,4 +24,15 @@ describe('handleResponseError', () => {
 
     expect(localStorage.getItem('token')).toBe('valid-token');
   });
+
+  it('does not clear the token or redirect on a 401 from a login attempt', async () => {
+    localStorage.setItem('token', 'valid-token');
+
+    await expect(
+      handleResponseError({ response: { status: 401 }, config: { url: '/api/auth/login' } })
+    ).rejects.toBeDefined();
+
+    expect(localStorage.getItem('token')).toBe('valid-token');
+    expect(window.location.assign).not.toHaveBeenCalled();
+  });
 });

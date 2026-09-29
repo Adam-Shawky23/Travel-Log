@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchTrip, deleteTrip, updateTrip } from '../api/trips.js';
@@ -10,6 +11,7 @@ function TripDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [actionError, setActionError] = useState('');
 
   const {
     data: trip,
@@ -26,14 +28,28 @@ function TripDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['trips'] });
       navigate('/dashboard');
     },
+    onError: (err) => {
+      setActionError(err.response?.data?.error || 'Failed to delete trip.');
+    },
   });
 
   const shareMutation = useMutation({
     mutationFn: (isPublic) => updateTrip(id, { isPublic }),
     onSuccess: (updated) => {
+      setActionError('');
       queryClient.setQueryData(['trips', id], updated);
     },
+    onError: (err) => {
+      setActionError(err.response?.data?.error || 'Failed to update trip.');
+    },
   });
+
+  function handleDelete() {
+    if (window.confirm('Delete this trip? This cannot be undone.')) {
+      setActionError('');
+      deleteMutation.mutate();
+    }
+  }
 
   if (isLoading) return <p className="p-6">Loading...</p>;
   if (isError || !trip) return <p className="p-6 text-red-600">Trip not found.</p>;
@@ -62,12 +78,21 @@ function TripDetailPage() {
           <Link to={`/trips/${id}/edit`} className="text-blue-600">
             Edit
           </Link>
-          <button onClick={() => deleteMutation.mutate()} className="text-red-600">
-            Delete
+          <button
+            onClick={handleDelete}
+            disabled={deleteMutation.isPending}
+            className="text-red-600 disabled:opacity-50"
+          >
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </button>
-          <button onClick={() => shareMutation.mutate(!trip.isPublic)} className="text-gray-700">
+          <button
+            onClick={() => shareMutation.mutate(!trip.isPublic)}
+            disabled={shareMutation.isPending}
+            className="text-gray-700 disabled:opacity-50"
+          >
             {trip.isPublic ? 'Make private' : 'Make public'}
           </button>
+          {actionError && <p className="text-red-600 text-sm mt-2">{actionError}</p>}
           {trip.isPublic && (
             <span className="block mt-2 text-sm text-gray-600">
               Shareable link: {window.location.origin}/share/{trip._id}

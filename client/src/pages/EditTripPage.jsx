@@ -8,7 +8,7 @@ function EditTripPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: trip, isLoading } = useQuery({
+  const { data: trip, isLoading, isError } = useQuery({
     queryKey: ['trips', id],
     queryFn: () => fetchTrip(id),
   });
@@ -23,6 +23,7 @@ function EditTripPage() {
   });
 
   if (isLoading) return <p className="p-6">Loading...</p>;
+  if (isError) return <p className="p-6 text-red-600">Failed to load trip.</p>;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -33,6 +34,11 @@ function EditTripPage() {
         submitLabel="Save changes"
         allowPhotoUpload={false}
       />
+      {mutation.isError && (
+        <p className="text-red-600 mt-2">
+          {mutation.error?.response?.data?.error || 'Failed to save changes.'}
+        </p>
+      )}
     </div>
   );
 }

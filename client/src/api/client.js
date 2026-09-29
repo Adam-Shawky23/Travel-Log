@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 export function handleResponseError(error) {
-  if (error.response && error.response.status === 401) {
+  const url = error.config?.url || '';
+  const isCredentialAttempt = url.includes('/api/auth/login') || url.includes('/api/auth/register');
+  if (error.response?.status === 401 && !isCredentialAttempt) {
     localStorage.removeItem('token');
     window.location.assign('/login');
   }

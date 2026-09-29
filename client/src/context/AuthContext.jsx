@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchMe } from '../api/auth.js';
 
@@ -8,7 +8,12 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const queryClient = useQueryClient();
 
-  const { data: user, isLoading } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error: meError,
+  } = useQuery({
     queryKey: ['me'],
     queryFn: fetchMe,
     enabled: Boolean(token),
@@ -27,11 +32,26 @@ export function AuthProvider({ children }) {
     queryClient.removeQueries({ queryKey: ['me'] });
   }
 
+  // If we can't identify the current user for ANY reason (401, 500, network
+  // blip, ...) we must not keep treating them as authenticated: staying
+  // "logged in" with an unknown user silently hides owner-only controls
+  // instead of surfacing the problem. A 401 is also handled by the axios
+  // interceptor, but that path is best-effort (e.g. it won't fire in tests
+  // that mock the API layer), so this is the authoritative fallback.
+  useEffect(() => {
+    if (isError) {
+      logout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isError]);
+
   const value = {
     token,
     user,
     isAuthenticated: Boolean(token),
     isLoading: Boolean(token) && isLoading,
+    isMeError: isError,
+    meError,
     loginWithToken,
     logout,
   };

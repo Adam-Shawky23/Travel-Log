@@ -19,7 +19,11 @@ function NewTripPage() {
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">New trip</h1>
       <TripForm onSubmit={(formData) => mutation.mutate(formData)} submitLabel="Create trip" />
-      {mutation.isError && <p className="text-red-600 mt-2">Failed to create trip.</p>}
+      {mutation.isError && (
+        <p className="text-red-600 mt-2">
+          {mutation.error?.response?.data?.error || 'Failed to create trip.'}
+        </p>
+      )}
     </div>
   );
 }
