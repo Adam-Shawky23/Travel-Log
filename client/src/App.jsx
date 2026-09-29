@@ -7,6 +7,7 @@ import NewTripPage from './pages/NewTripPage.jsx';
 import TripDetailPage from './pages/TripDetailPage.jsx';
 import EditTripPage from './pages/EditTripPage.jsx';
 import SharePage from './pages/SharePage.jsx';
+import MapPage from './pages/MapPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
@@ -45,6 +46,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TripDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/map"
+        element={
+          <ProtectedRoute>
+            <MapPage />
           </ProtectedRoute>
         }
       />
