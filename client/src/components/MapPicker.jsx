@@ -19,8 +19,8 @@ function ClickHandler({ onPick }) {
 }
 
 function MapPicker({ lat, lng, onPick }) {
-  const center = lat && lng ? [lat, lng] : [20, 0];
-  const zoom = lat && lng ? 8 : 2;
+  const center = lat != null && lng != null ? [lat, lng] : [20, 0];
+  const zoom = lat != null && lng != null ? 8 : 2;
 
   return (
     <MapContainer center={center} zoom={zoom} style={{ height: '300px', width: '100%' }}>
@@ -29,7 +29,7 @@ function MapPicker({ lat, lng, onPick }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <ClickHandler onPick={onPick} />
-      {lat && lng && <Marker position={[lat, lng]} icon={markerIcon} />}
+      {lat != null && lng != null && <Marker position={[lat, lng]} icon={markerIcon} />}
     </MapContainer>
   );
 }
