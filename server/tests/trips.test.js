@@ -89,4 +89,22 @@ describe('POST /api/trips', () => {
 
     expect(res.status).toBe(400);
   });
+
+  it('rejects a photo upload with an oversized file with 400', async () => {
+    const token = await registerUser('owner@example.com');
+    // Create a buffer larger than 5MB (5242880 bytes)
+    const oversizedBuffer = Buffer.alloc(5 * 1024 * 1024 + 1);
+    const res = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Trip With Oversized Photo')
+      .field('lat', '1')
+      .field('lng', '1')
+      .attach('photos', oversizedBuffer, {
+        filename: 'large-photo.jpg',
+        contentType: 'image/jpeg',
+      });
+
+    expect(res.status).toBe(400);
+  });
 });
