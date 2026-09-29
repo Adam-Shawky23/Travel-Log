@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const authRoutes = require('./routes/auth.routes');
+const tripsRoutes = require('./routes/trips.routes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -15,6 +16,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/trips', tripsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
