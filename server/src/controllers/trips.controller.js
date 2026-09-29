@@ -57,4 +57,43 @@ async function getTrip(req, res, next) {
   }
 }
 
-module.exports = { createTrip, listTrips, getTrip, assertOwner };
+async function updateTrip(req, res, next) {
+  try {
+    const trip = await Trip.findById(req.params.id);
+    if (!trip) {
+      throw new AppError('Trip not found', 404);
+    }
+    assertOwner(trip, req.userId);
+
+    const { title, description, startDate, endDate, locationName, lat, lng, isPublic } = req.body;
+    if (title !== undefined) trip.title = title;
+    if (description !== undefined) trip.description = description;
+    if (startDate !== undefined) trip.startDate = startDate;
+    if (endDate !== undefined) trip.endDate = endDate;
+    if (locationName !== undefined) trip.location.name = locationName;
+    if (lat !== undefined) trip.location.lat = Number(lat);
+    if (lng !== undefined) trip.location.lng = Number(lng);
+    if (isPublic !== undefined) trip.isPublic = isPublic === 'true' || isPublic === true;
+
+    await trip.save();
+    res.json(trip);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteTrip(req, res, next) {
+  try {
+    const trip = await Trip.findById(req.params.id);
+    if (!trip) {
+      throw new AppError('Trip not found', 404);
+    }
+    assertOwner(trip, req.userId);
+    await trip.deleteOne();
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { createTrip, listTrips, getTrip, updateTrip, deleteTrip, assertOwner };

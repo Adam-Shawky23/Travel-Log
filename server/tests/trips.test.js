@@ -181,3 +181,83 @@ describe('GET /api/trips/:id', () => {
     expect(res.body.title).toBe('My Trip');
   });
 });
+
+describe('PUT /api/trips/:id', () => {
+  it('updates a trip owned by the authenticated user', async () => {
+    const token = await registerUser('owner@example.com');
+    const created = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Original Title')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    const res = await request(app)
+      .put(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Updated Title' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.title).toBe('Updated Title');
+  });
+
+  it("returns 403 when a non-owner tries to update another user's trip", async () => {
+    const ownerToken = await registerUser('owner@example.com');
+    const otherToken = await registerUser('other@example.com');
+
+    const created = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .field('title', 'Private Trip')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    const res = await request(app)
+      .put(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${otherToken}`)
+      .send({ title: 'Hijacked Title' });
+
+    expect(res.status).toBe(403);
+  });
+});
+
+describe('DELETE /api/trips/:id', () => {
+  it('deletes a trip owned by the authenticated user', async () => {
+    const token = await registerUser('owner@example.com');
+    const created = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'To Delete')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    const res = await request(app)
+      .delete(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(204);
+
+    const getRes = await request(app)
+      .get(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(getRes.status).toBe(404);
+  });
+
+  it("returns 403 when a non-owner tries to delete another user's trip", async () => {
+    const ownerToken = await registerUser('owner@example.com');
+    const otherToken = await registerUser('other@example.com');
+
+    const created = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .field('title', 'Private Trip')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    const res = await request(app)
+      .delete(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${otherToken}`);
+
+    expect(res.status).toBe(403);
+  });
+});
