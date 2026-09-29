@@ -90,3 +90,32 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe('GET /api/auth/me', () => {
+  it('rejects a request with no token with 401', async () => {
+    const res = await request(app).get('/api/auth/me');
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects a request with a malformed token with 401', async () => {
+    const res = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', 'Bearer not-a-real-token');
+    expect(res.status).toBe(401);
+  });
+
+  it('returns the current user profile for a valid token', async () => {
+    const registerRes = await request(app).post('/api/auth/register').send({
+      name: 'Ada',
+      email: 'ada@example.com',
+      password: 'password123',
+    });
+
+    const res = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${registerRes.body.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.email).toBe('ada@example.com');
+  });
+});

@@ -53,4 +53,16 @@ async function login(req, res, next) {
   }
 }
 
-module.exports = { register, login };
+async function me(req, res, next) {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+    res.json({ id: user._id, name: user.name, email: user.email });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { register, login, me };
