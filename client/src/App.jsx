@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage.jsx';
 import NewTripPage from './pages/NewTripPage.jsx';
 import TripDetailPage from './pages/TripDetailPage.jsx';
 import EditTripPage from './pages/EditTripPage.jsx';
+import SharePage from './pages/SharePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/share/:id" element={<SharePage />} />
       <Route
         path="/dashboard"
         element={
