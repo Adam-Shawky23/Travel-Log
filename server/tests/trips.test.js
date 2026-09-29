@@ -108,3 +108,76 @@ describe('POST /api/trips', () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe('GET /api/trips', () => {
+  it("lists only the authenticated user's trips", async () => {
+    const ownerToken = await registerUser('owner@example.com');
+    const otherToken = await registerUser('other@example.com');
+
+    await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .field('title', 'Owner Trip')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${otherToken}`)
+      .field('title', 'Other Trip')
+      .field('lat', '2')
+      .field('lng', '2');
+
+    const res = await request(app).get('/api/trips').set('Authorization', `Bearer ${ownerToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].title).toBe('Owner Trip');
+  });
+});
+
+describe('GET /api/trips/:id', () => {
+  it('returns 403 when a non-owner requests another user\'s trip', async () => {
+    const ownerToken = await registerUser('owner@example.com');
+    const otherToken = await registerUser('other@example.com');
+
+    const created = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .field('title', 'Private Trip')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    const res = await request(app)
+      .get(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${otherToken}`);
+
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 404 for a trip id that does not exist', async () => {
+    const token = await registerUser('owner@example.com');
+    const res = await request(app)
+      .get('/api/trips/64f000000000000000000000')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(404);
+  });
+
+  it('returns the trip for its owner', async () => {
+    const token = await registerUser('owner@example.com');
+    const created = await request(app)
+      .post('/api/trips')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'My Trip')
+      .field('lat', '1')
+      .field('lng', '1');
+
+    const res = await request(app)
+      .get(`/api/trips/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.title).toBe('My Trip');
+  });
+});
