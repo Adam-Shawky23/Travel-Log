@@ -29,4 +29,32 @@ async function createTrip(req, res, next) {
   }
 }
 
-module.exports = { createTrip };
+function assertOwner(trip, userId) {
+  if (trip.owner.toString() !== userId) {
+    throw new AppError('You do not have access to this trip', 403);
+  }
+}
+
+async function listTrips(req, res, next) {
+  try {
+    const trips = await Trip.find({ owner: req.userId }).sort({ createdAt: -1 });
+    res.json(trips);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getTrip(req, res, next) {
+  try {
+    const trip = await Trip.findById(req.params.id);
+    if (!trip) {
+      throw new AppError('Trip not found', 404);
+    }
+    assertOwner(trip, req.userId);
+    res.json(trip);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { createTrip, listTrips, getTrip, assertOwner };
