@@ -29,6 +29,9 @@ function NavBar() {
           Travel Log
         </Link>
         <div className="flex items-center gap-6">
+          <Link to="/explore" className={linkClasses}>
+            Explore
+          </Link>
           {isAuthenticated ? (
             <>
               <Link to="/dashboard" className={linkClasses}>

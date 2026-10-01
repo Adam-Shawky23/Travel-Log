@@ -1,6 +1,17 @@
 const Trip = require('../models/Trip');
 const { AppError } = require('../middleware/errorHandler');
 
+async function listPublicTrips(req, res, next) {
+  try {
+    const trips = await Trip.find({ isPublic: true })
+      .sort({ createdAt: -1 })
+      .populate('owner', 'name');
+    res.json(trips);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getPublicTrip(req, res, next) {
   try {
     const trip = await Trip.findById(req.params.id);
@@ -13,4 +24,4 @@ async function getPublicTrip(req, res, next) {
   }
 }
 
-module.exports = { getPublicTrip };
+module.exports = { listPublicTrips, getPublicTrip };

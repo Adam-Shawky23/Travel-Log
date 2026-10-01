@@ -1,8 +1,9 @@
 const express = require('express');
-const { getPublicTrip } = require('../controllers/public.controller');
+const { listPublicTrips, getPublicTrip } = require('../controllers/public.controller');
 
 const router = express.Router();
 
+router.get('/trips', listPublicTrips);
 router.get('/trips/:id', getPublicTrip);
 
 module.exports = router;

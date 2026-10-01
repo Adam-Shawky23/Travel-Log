@@ -8,6 +8,7 @@ import NewTripPage from './pages/NewTripPage.jsx';
 import TripDetailPage from './pages/TripDetailPage.jsx';
 import EditTripPage from './pages/EditTripPage.jsx';
 import SharePage from './pages/SharePage.jsx';
+import ExplorePage from './pages/ExplorePage.jsx';
 import MapPage from './pages/MapPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/share/:id" element={<SharePage />} />
+        <Route path="/explore" element={<ExplorePage />} />
         <Route
           path="/dashboard"
           element={
