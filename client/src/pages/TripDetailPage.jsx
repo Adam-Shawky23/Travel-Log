@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchTrip, deleteTrip, updateTrip } from '../api/trips.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import ShareButtons from '../components/ShareButtons.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -127,12 +128,15 @@ function TripDetailPage() {
           </div>
           {actionError && <p className="text-oxblood-500 text-sm mt-3">{actionError}</p>}
           {trip.isPublic && (
-            <p className="mt-4 text-sm text-ink-700">
-              Shareable link:{' '}
-              <span className="text-brass-600">
-                {window.location.origin}/share/{trip._id}
-              </span>
-            </p>
+            <div className="mt-4">
+              <p className="text-sm text-ink-700 mb-3">
+                Shareable link:{' '}
+                <span className="text-brass-600">
+                  {window.location.origin}/share/{trip._id}
+                </span>
+              </p>
+              <ShareButtons url={`${window.location.origin}/share/${trip._id}`} title={trip.title} />
+            </div>
           )}
         </div>
       )}

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPublicTrip } from '../api/public.js';
+import ShareButtons from '../components/ShareButtons.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -54,6 +55,11 @@ function SharePage() {
           ))}
         </div>
       )}
+
+      <div className="mt-8 pt-6 border-t border-dashed border-paper-200">
+        <p className="text-sm text-ink-700 mb-3">Share this trip</p>
+        <ShareButtons url={window.location.href} title={trip.title} />
+      </div>
     </div>
   );
 }
