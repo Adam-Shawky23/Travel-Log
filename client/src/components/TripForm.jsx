@@ -4,6 +4,9 @@ import MapPicker from './MapPicker.jsx';
 const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB, matches server/src/middleware/upload.js MAX_SIZE
 
+const fieldClasses =
+  'w-full border border-paper-200 rounded-lg px-3.5 py-2.5 text-ink-900 placeholder:text-ink-400 focus:border-brass-500 focus:ring-1 focus:ring-brass-500 outline-none transition-colors bg-white';
+
 function TripForm({ initialValues, onSubmit, submitLabel, allowPhotoUpload = true }) {
   const [title, setTitle] = useState(initialValues?.title || '');
   const [description, setDescription] = useState(initialValues?.description || '');
@@ -66,69 +69,100 @@ function TripForm({ initialValues, onSubmit, submitLabel, allowPhotoUpload = tru
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-      <input
-        type="text"
-        placeholder="Trip title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full border rounded px-3 py-2"
-      />
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full border rounded px-3 py-2"
-        rows={4}
-      />
-      <div className="flex gap-4">
+    <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
+      <div>
+        <label className="block text-sm font-medium text-ink-700 mb-1.5">Title</label>
         <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border rounded px-3 py-2"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border rounded px-3 py-2"
+          type="text"
+          placeholder="Trip title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className={fieldClasses}
         />
       </div>
-      <input
-        type="text"
-        placeholder="Location name (e.g. Lisbon, Portugal)"
-        value={locationName}
-        onChange={(e) => setLocationName(e.target.value)}
-        className="w-full border rounded px-3 py-2"
-      />
-      <p className="text-sm text-gray-600">Click the map to drop a pin:</p>
-      <MapPicker lat={lat} lng={lng} onPick={handlePick} />
+
+      <div>
+        <label className="block text-sm font-medium text-ink-700 mb-1.5">Description</label>
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className={fieldClasses}
+          rows={4}
+        />
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-ink-700 mb-1.5">Start date</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className={fieldClasses}
+          />
+        </div>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-ink-700 mb-1.5">End date</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className={fieldClasses}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-ink-700 mb-1.5">Location name</label>
+        <input
+          type="text"
+          placeholder="Location name (e.g. Lisbon, Portugal)"
+          value={locationName}
+          onChange={(e) => setLocationName(e.target.value)}
+          className={fieldClasses}
+        />
+      </div>
+
+      <div>
+        <p className="text-sm font-medium text-ink-700 mb-1.5">Click the map to drop a pin</p>
+        <div className="rounded-xl overflow-hidden border border-paper-200">
+          <MapPicker lat={lat} lng={lng} onPick={handlePick} />
+        </div>
+      </div>
+
       {allowPhotoUpload && (
         <div>
+          <label className="block text-sm font-medium text-ink-700 mb-1.5">Photos</label>
           <input
             aria-label="photos"
             type="file"
             multiple
             accept="image/jpeg,image/png,image/webp"
             onChange={handlePhotosChange}
+            className="text-sm text-ink-700 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:bg-ink-900 file:text-paper-50 file:text-sm file:font-medium hover:file:bg-ink-800 file:cursor-pointer cursor-pointer"
           />
           {photoPreviews.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2 mt-3">
               {photoPreviews.map((src, index) => (
                 <img
                   key={src}
                   src={src}
                   alt={`Selected photo ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded border"
+                  className="w-20 h-20 object-cover rounded-lg border border-paper-200"
                 />
               ))}
             </div>
           )}
         </div>
       )}
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-      <button type="submit" className="bg-blue-600 text-white rounded px-4 py-2">
+
+      {error && <p className="text-oxblood-500 text-sm">{error}</p>}
+
+      <button
+        type="submit"
+        className="bg-brass-500 text-ink-900 rounded-full px-6 py-2.5 font-medium hover:bg-brass-400 transition-colors"
+      >
         {submitLabel}
       </button>
     </form>

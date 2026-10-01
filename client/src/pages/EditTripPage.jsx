@@ -22,12 +22,13 @@ function EditTripPage() {
     },
   });
 
-  if (isLoading) return <p className="p-6">Loading...</p>;
-  if (isError) return <p className="p-6 text-red-600">Failed to load trip.</p>;
+  if (isLoading) return <p className="px-6 py-10 text-ink-700">Loading...</p>;
+  if (isError) return <p className="px-6 py-10 text-oxblood-500">Failed to load trip.</p>;
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Edit trip</h1>
+    <div className="max-w-2xl mx-auto px-6 py-10">
+      <p className="text-sm text-brass-600 font-medium mb-1">Editing</p>
+      <h1 className="font-display text-2xl font-semibold text-ink-900 mb-6">Edit trip</h1>
       <TripForm
         initialValues={trip}
         onSubmit={(formData) => mutation.mutate(formData)}
@@ -35,7 +36,7 @@ function EditTripPage() {
         allowPhotoUpload={false}
       />
       {mutation.isError && (
-        <p className="text-red-600 mt-2">
+        <p className="text-oxblood-500 mt-3">
           {mutation.error?.response?.data?.error || 'Failed to save changes.'}
         </p>
       )}

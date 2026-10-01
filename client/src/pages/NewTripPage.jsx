@@ -16,11 +16,12 @@ function NewTripPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">New trip</h1>
+    <div className="max-w-2xl mx-auto px-6 py-10">
+      <p className="text-sm text-brass-600 font-medium mb-1">New entry</p>
+      <h1 className="font-display text-2xl font-semibold text-ink-900 mb-6">New trip</h1>
       <TripForm onSubmit={(formData) => mutation.mutate(formData)} submitLabel="Create trip" />
       {mutation.isError && (
-        <p className="text-red-600 mt-2">
+        <p className="text-oxblood-500 mt-3">
           {mutation.error?.response?.data?.error || 'Failed to create trip.'}
         </p>
       )}
