@@ -27,6 +27,18 @@ npm install
 npm run dev              # http://localhost:5173
 ```
 
+### Demo data
+
+```bash
+cd server && npm run seed
+```
+
+Creates (or resets) a demo account with six sample trips so the dashboard, map, and share
+views have realistic content to look at. Log in with `demo@travel-log.app` / `password123`.
+Re-running the script replaces the demo account's trips rather than duplicating them. Trips
+have no photos attached, since the script doesn't fabricate image files — cards fall back to
+the "No photo" placeholder.
+
 ### Tests
 
 ```bash
